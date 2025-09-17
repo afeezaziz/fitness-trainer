@@ -59,4 +59,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:$PORT/ || exit 1
 
 # Run the application with optimized Gunicorn settings
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "--workers", "4", "--timeout", "120", "--max-requests", "1000", "--max-requests-jitter", "50", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 --max-requests 1000 --max-requests-jitter 50 app:app"]

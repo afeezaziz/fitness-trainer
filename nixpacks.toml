@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["...", "python3"]
+
+[phases.install]
+cmds = ["python -m venv /opt/venv && . /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt"]
+
+[phases.build]
+cmds = ["echo 'No build step required'"]
+
+[start]
+cmd = "gunicorn --bind 0.0.0.0:$PORT app:app"

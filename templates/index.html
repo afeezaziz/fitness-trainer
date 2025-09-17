@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>Welcome to Fitness Trainer</h2>
+    <p>Your comprehensive fitness tracking solution. Start monitoring your nutrition and exercise today!</p>
+
+    {% if not session.get('user') %}
+    <div class="card" style="background-color: #e8f5e8; border-left: 4px solid #4CAF50;">
+        <h3>🔐 Login Required</h3>
+        <p>Please log in with your Google account to access all fitness tracking features.</p>
+        <p style="margin: 20px 0;">
+            <a href="/login" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Login with Google</a>
+        </p>
+    </div>
+    {% endif %}
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+        <div class="card">
+            <h3>🍎 Food Tracking</h3>
+            <p>Log your daily meals and track nutritional intake. Monitor what you eat throughout the day.</p>
+            {% if session.get('user') %}
+            <a href="/food" style="color: #4CAF50; text-decoration: none;">Start Tracking →</a>
+            {% else %}
+            <p style="color: #666; font-style: italic;">Login required to access</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>🔥 Calorie Counter</h3>
+            <p>Count your daily calories and monitor your caloric intake against your fitness goals.</p>
+            {% if session.get('user') %}
+            <a href="/calories" style="color: #4CAF50; text-decoration: none;">Count Calories →</a>
+            {% else %}
+            <p style="color: #666; font-style: italic;">Login required to access</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>💪 Exercise Monitor</h3>
+            <p>Track your workouts, log sets, reps, and weights to monitor your strength progress.</p>
+            {% if session.get('user') %}
+            <a href="/exercise" style="color: #4CAF50; text-decoration: none;">Log Exercise →</a>
+            {% else %}
+            <p style="color: #666; font-style: italic;">Login required to access</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

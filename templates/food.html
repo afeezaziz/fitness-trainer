@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Food Tracking{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>Food Tracking</h2>
+    <p>Log your meals and track your nutritional intake throughout the day.</p>
+
+    <div class="card">
+        <h3>Add New Meal</h3>
+        <form action="/add_food" method="POST">
+            <div class="form-group">
+                <label for="meal-type">Meal Type:</label>
+                <select id="meal-type" name="meal-type" required>
+                    <option value="">Select meal type</option>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="food-name">Food Item:</label>
+                <input type="text" id="food-name" name="food-name" placeholder="e.g., Grilled Chicken Breast" required>
+            </div>
+
+            <div class="form-group">
+                <label for="portion-size">Portion Size:</label>
+                <input type="text" id="portion-size" name="portion-size" placeholder="e.g., 200g, 1 cup, 1 piece" required>
+            </div>
+
+            <div class="form-group">
+                <label for="meal-time">Meal Time:</label>
+                <input type="datetime-local" id="meal-time" name="meal-time" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (optional):</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..."></textarea>
+            </div>
+
+            <button type="submit">Log Meal</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Today's Food Log</h3>
+        {% if food_logs %}
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Time</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Meal Type</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Food Item</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Portion</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in food_logs %}
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.meal_time.strftime('%I:%M %p') }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-transform: capitalize;">{{ log.meal_type }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.food_name }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.portion_size }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.notes or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 20px;">No meals logged yet today. Start by adding your first meal above!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

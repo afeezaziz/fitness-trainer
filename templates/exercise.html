@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise Monitor{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>Exercise Monitor</h2>
+    <p>Track your workouts, log sets, reps, and weights to monitor your strength progress.</p>
+
+    <div class="card">
+        <h3>Log New Exercise</h3>
+        <form action="/add_exercise" method="POST">
+            <div class="form-group">
+                <label for="exercise-name">Exercise Name:</label>
+                <input type="text" id="exercise-name" name="exercise-name" placeholder="e.g., Bench Press, Squat, Deadlift" required>
+            </div>
+
+            <div class="form-group">
+                <label for="exercise-type">Exercise Type:</label>
+                <select id="exercise-type" name="exercise-type" required>
+                    <option value="">Select type</option>
+                    <option value="strength">Strength Training</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="flexibility">Flexibility</option>
+                    <option value="sports">Sports</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sets">Sets:</label>
+                <input type="number" id="sets" name="sets" min="1" placeholder="e.g., 3" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reps">Reps:</label>
+                <input type="number" id="reps" name="reps" min="1" placeholder="e.g., 10" required>
+            </div>
+
+            <div class="form-group">
+                <label for="weight">Weight (lbs/kg):</label>
+                <input type="number" id="weight" name="weight" min="0" step="0.5" placeholder="e.g., 135">
+            </div>
+
+            <div class="form-group">
+                <label for="workout-time">Workout Time:</label>
+                <input type="datetime-local" id="workout-time" name="workout-time" required>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (optional):</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..."></textarea>
+            </div>
+
+            <button type="submit">Log Exercise</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Today's Workout Log</h3>
+        {% if exercise_logs %}
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="background-color: #f5f5f5;">
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Time</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Exercise</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Type</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Sets</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Reps</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Weight</th>
+                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in exercise_logs %}
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.workout_time.strftime('%I:%M %p') }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.exercise_name }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-transform: capitalize;">{{ log.exercise_type }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.sets }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.reps }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.weight or '-' }} {{ 'lbs' if log.weight else '' }}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.notes or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color: #666; text-align: center; padding: 20px;">No exercises logged yet today. Start by adding your first workout above!</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <h3>Monthly Progress</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+            <div style="text-align: center; padding: 10px; background-color: #f0f8ff; border-radius: 5px;">
+                <h4 style="margin: 0; color: #4682b4;">{{ stats.workouts }}</h4>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">Workouts</p>
+            </div>
+            <div style="text-align: center; padding: 10px; background-color: #f0fff0; border-radius: 5px;">
+                <h4 style="margin: 0; color: #32cd32;">{{ stats.sets }}</h4>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">Total Sets</p>
+            </div>
+            <div style="text-align: center; padding: 10px; background-color: #fff0f5; border-radius: 5px;">
+                <h4 style="margin: 0; color: #ff69b4;">{{ stats.reps }}</h4>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">Total Reps</p>
+            </div>
+            <div style="text-align: center; padding: 10px; background-color: #fffacd; border-radius: 5px;">
+                <h4 style="margin: 0; color: #daa520;">{{ stats.max_weight }} lbs</h4>
+                <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">Max Weight</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

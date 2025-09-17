@@ -3,76 +3,108 @@
 {% block title %}Food Tracking{% endblock %}
 
 {% block content %}
-<div class="content">
-    <h2>Food Tracking</h2>
-    <p>Log your meals and track your nutritional intake throughout the day.</p>
-
-    <div class="card">
-        <h3>Add New Meal</h3>
-        <form action="/add_food" method="POST">
-            <div class="form-group">
-                <label for="meal-type">Meal Type:</label>
-                <select id="meal-type" name="meal-type" required>
-                    <option value="">Select meal type</option>
-                    <option value="breakfast">Breakfast</option>
-                    <option value="lunch">Lunch</option>
-                    <option value="dinner">Dinner</option>
-                    <option value="snack">Snack</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="food-name">Food Item:</label>
-                <input type="text" id="food-name" name="food-name" placeholder="e.g., Grilled Chicken Breast" required>
-            </div>
-
-            <div class="form-group">
-                <label for="portion-size">Portion Size:</label>
-                <input type="text" id="portion-size" name="portion-size" placeholder="e.g., 200g, 1 cup, 1 piece" required>
-            </div>
-
-            <div class="form-group">
-                <label for="meal-time">Meal Time:</label>
-                <input type="datetime-local" id="meal-time" name="meal-time" required>
-            </div>
-
-            <div class="form-group">
-                <label for="notes">Notes (optional):</label>
-                <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..."></textarea>
-            </div>
-
-            <button type="submit">Log Meal</button>
-        </form>
+<div class="max-w-6xl mx-auto">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Food Tracking</h2>
+        <p class="text-gray-600">Log your meals and track your nutritional intake throughout the day.</p>
     </div>
 
-    <div class="card">
-        <h3>Today's Food Log</h3>
-        {% if food_logs %}
-            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                <thead>
-                    <tr style="background-color: #f5f5f5;">
-                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Time</th>
-                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Meal Type</th>
-                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Food Item</th>
-                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Portion</th>
-                        <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in food_logs %}
-                    <tr>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.meal_time.strftime('%I:%M %p') }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-transform: capitalize;">{{ log.meal_type }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.food_name }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.portion_size }}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee;">{{ log.notes or '-' }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p style="color: #666; text-align: center; padding: 20px;">No meals logged yet today. Start by adding your first meal above!</p>
-        {% endif %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-800">Add New Meal</h3>
+            </div>
+
+            <form action="/add_food" method="POST" class="space-y-4">
+                <div>
+                    <label for="meal-type" class="block text-sm font-medium text-gray-700 mb-2">Meal Type</label>
+                    <select id="meal-type" name="meal-type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                        <option value="">Select meal type</option>
+                        <option value="breakfast">🌅 Breakfast</option>
+                        <option value="lunch">☀️ Lunch</option>
+                        <option value="dinner">🌙 Dinner</option>
+                        <option value="snack">🍎 Snack</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="food-name" class="block text-sm font-medium text-gray-700 mb-2">Food Item</label>
+                    <input type="text" id="food-name" name="food-name" placeholder="e.g., Grilled Chicken Breast" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                </div>
+
+                <div>
+                    <label for="portion-size" class="block text-sm font-medium text-gray-700 mb-2">Portion Size</label>
+                    <input type="text" id="portion-size" name="portion-size" placeholder="e.g., 200g, 1 cup, 1 piece" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                </div>
+
+                <div>
+                    <label for="meal-time" class="block text-sm font-medium text-gray-700 mb-2">Meal Time</label>
+                    <input type="datetime-local" id="meal-time" name="meal-time" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                </div>
+
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (optional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-primary hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Log Meal
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="flex items-center mb-6">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-800">Today's Food Log</h3>
+            </div>
+
+            {% if food_logs %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meal Type</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Food Item</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Portion</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for log in food_logs %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ log.meal_time.strftime('%I:%M %p') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary text-white">
+                                        {{ log.meal_type }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ log.food_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ log.portion_size }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ log.notes or '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <p class="text-gray-500 text-base">No meals logged yet today. Start by adding your first meal above!</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

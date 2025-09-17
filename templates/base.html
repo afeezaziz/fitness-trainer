@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your food intake, calories, and exercise progress offline">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Fitness Trainer">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+
     <title>Fitness Trainer - {% block title %}Home{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -133,5 +145,20 @@
             </div>
         </div>
     </footer>
+
+    <!-- Install App Button -->
+    {% if session.get('user') %}
+    <button id="installBtn" class="fixed bottom-4 right-4 bg-primary hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 z-40 hidden">
+        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Install App
+    </button>
+    {% endif %}
+
+    <!-- Offline JavaScript -->
+    {% if session.get('user') %}
+    <script src="/static/js/offline.js"></script>
+    {% endif %}
 </body>
 </html>

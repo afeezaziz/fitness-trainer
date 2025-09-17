@@ -13,6 +13,10 @@ app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-producti
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fitness.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Fix redirect URI for HTTPS behind reverse proxy
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
 # Initialize database
 db.init_app(app)
 

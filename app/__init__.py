@@ -255,9 +255,12 @@ def logout():
     return redirect(url_for('index'))
 
 # Initialize database on startup
-@app.before_first_request
 def create_tables():
-    init_db()
+    with app.app_context():
+        init_db()
+
+# Create tables when app is created
+create_tables()
 
 if __name__ == '__main__':
     app.run(debug=True, port=8081)

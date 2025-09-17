@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, session, request, flash
 from authlib.integrations.flask_client import OAuth
 from flask_sqlalchemy import SQLAlchemy
-from models import db, User, FoodLog, CalorieEntry, ExerciseLog, init_db
+from app.models import db, User, FoodLog, CalorieEntry, ExerciseLog, init_db
 import os
 from datetime import datetime, date
 from dotenv import load_dotenv

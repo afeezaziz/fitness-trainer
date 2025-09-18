@@ -15,6 +15,15 @@ app = Flask(__name__, template_folder='/app/templates', static_folder='/app/stat
 def offline():
     return render_template('offline.html')
 
+def login_required(f):
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('You must be logged in to access this page.', 'warning')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    decorated_function.__name__ = f.__name__
+    return decorated_function
+
 # Add settings page route
 @app.route('/settings')
 @login_required
@@ -40,14 +49,6 @@ google = oauth.register(
     client_kwargs={'scope': 'openid email profile'}
 )
 
-def login_required(f):
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            flash('You must be logged in to access this page.', 'warning')
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    decorated_function.__name__ = f.__name__
-    return decorated_function
 
 def get_current_user():
     if 'user_id' not in session:

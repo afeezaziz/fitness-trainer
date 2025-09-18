@@ -14,6 +14,12 @@ app = Flask(__name__, template_folder='/app/templates', static_folder='/app/stat
 @app.route('/offline')
 def offline():
     return render_template('offline.html')
+
+# Add settings page route
+@app.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html')
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fitness.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

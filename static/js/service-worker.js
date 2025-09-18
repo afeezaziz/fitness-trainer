@@ -2,37 +2,95 @@ const CACHE_NAME = 'fitness-app-v1';
 const OFFLINE_CACHE = 'fitness-app-offline-v1';
 const STATIC_CACHE = 'fitness-app-static-v1';
 
+// Version tracking for updates
+const CURRENT_VERSION = '1.0.0';
+const CACHE_PREFIX = 'fitness-app-';
+const CACHE_VERSION = 'v1';
+
 // Assets to cache on install
 const STATIC_ASSETS = [
   '/',
   '/static/css/styles.css',
   '/static/js/offline.js',
+  '/static/js/service-worker.js',
   '/static/manifest.json',
   'https://cdn.tailwindcss.com'
 ];
+
+// Update notification channel
+let updateChannel = null;
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('Service Worker installed and files cached');
+        return self.skipWaiting();
+      })
   );
 });
 
-// Activate event - clean up old caches
+// Handle updates - notify when new service worker is found
+self.addEventListener('updatefound', (event) => {
+  const installingWorker = registration.installing;
+
+  installingWorker.addEventListener('statechange', () => {
+    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+      // New service worker is installed, ready to activate
+      console.log('New version available, notifying user');
+      notifyUpdateAvailable();
+    }
+  });
+});
+
+// Notify clients about updates
+function notifyUpdateAvailable() {
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'UPDATE_AVAILABLE',
+        version: CURRENT_VERSION,
+        timestamp: new Date().toISOString()
+      });
+    });
+  });
+}
+
+// Activate event - clean up old caches and claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== STATIC_CACHE && cacheName !== OFFLINE_CACHE) {
+          // Delete old caches that don't match current version
+          if (cacheName.startsWith(CACHE_PREFIX) && cacheName !== STATIC_CACHE && cacheName !== OFFLINE_CACHE) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log('Service Worker activated');
+      return self.clients.claim();
+    })
   );
+});
+
+// Handle messages from clients
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({
+      type: 'VERSION_INFO',
+      version: CURRENT_VERSION,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // Fetch event - serve cached content when offline

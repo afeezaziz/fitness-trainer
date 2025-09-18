@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">App Settings</h1>
+
+        <!-- App Information -->
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">App Information</h2>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-sm text-gray-600">Version</span>
+                        <p class="font-medium text-gray-800" id="appVersion">Loading...</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Status</span>
+                        <p class="font-medium text-gray-800" id="appStatus">Loading...</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Last Updated</span>
+                        <p class="font-medium text-gray-800" id="lastUpdated">Loading...</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-600">Cache Size</span>
+                        <p class="font-medium text-gray-800" id="cacheSize">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Settings -->
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Updates</h2>
+            <div class="space-y-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-blue-800">Auto Updates</h3>
+                            <p class="text-sm text-blue-600">Automatically check for and install updates</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="autoUpdateToggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button onclick="checkForUpdates()" class="bg-primary hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                        Check for Updates
+                    </button>
+                    <button onclick="updateManager.applyUpdate()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200" id="updateNowBtn" style="display: none;">
+                        Update Now
+                    </button>
+                </div>
+
+                <div id="updateStatus" class="hidden p-4 rounded-lg">
+                    <p class="text-sm"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Management -->
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Storage Management</h2>
+            <div class="space-y-4">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 class="font-medium text-yellow-800">Offline Data</h3>
+                            <p class="text-sm text-yellow-600">Data stored locally for offline use</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="clearOfflineData()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                            Clear Offline Data
+                        </button>
+                        <button onclick="exportOfflineData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h3 class="font-medium text-red-800">Clear Cache</h3>
+                            <p class="text-sm text-red-600">Clear all cached files and data</p>
+                        </div>
+                    </div>
+                    <button onclick="clearAllCache()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm">
+                        Clear All Cache
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Information -->
+        <div class="mb-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Debug Information</h2>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <details>
+                    <summary class="cursor-pointer font-medium text-gray-700">Show Technical Details</summary>
+                    <div class="mt-4 space-y-3">
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Service Worker Status:</span>
+                            <p class="text-sm text-gray-800" id="swStatus">Checking...</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Online Status:</span>
+                            <p class="text-sm text-gray-800" id="onlineStatus">Checking...</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">IndexedDB Status:</span>
+                            <p class="text-sm text-gray-800" id="idbStatus">Checking...</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-gray-600">Browser Info:</span>
+                            <p class="text-sm text-gray-800" id="browserInfo">Checking...</p>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between items-center pt-6 border-t">
+            <button onclick="forceUpdate()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                Force Reload App
+            </button>
+            <button onclick="resetApp()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                Reset App Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Settings page functionality
+let updateManager = window.updateManager || null;
+
+// Initialize settings page
+document.addEventListener('DOMContentLoaded', () => {
+    if (!updateManager) {
+        // If update manager is not available, create a basic one
+        window.updateManager = new UpdateManager();
+        updateManager = window.updateManager;
+    }
+
+    loadSettings();
+    startStatusMonitoring();
+});
+
+async function loadSettings() {
+    await updateAppInfo();
+    await checkUpdateStatus();
+    await checkStorageUsage();
+    loadDebugInfo();
+}
+
+async function updateAppInfo() {
+    try {
+        // Get version info
+        if (updateManager) {
+            document.getElementById('appVersion').textContent = updateManager.currentVersion;
+        }
+
+        // Get last updated time from cache or localStorage
+        const lastUpdated = localStorage.getItem('fitnessAppLastUpdated') || 'Unknown';
+        document.getElementById('lastUpdated').textContent = new Date(lastUpdated).toLocaleString();
+
+        // Update status
+        const status = updateManager?.updateAvailable ? 'Update Available' : 'Up to date';
+        const statusElement = document.getElementById('appStatus');
+        statusElement.textContent = status;
+        statusElement.className = updateManager?.updateAvailable ? 'font-medium text-orange-600' : 'font-medium text-green-600';
+
+    } catch (error) {
+        console.error('Error loading app info:', error);
+    }
+}
+
+async function checkUpdateStatus() {
+    const updateNowBtn = document.getElementById('updateNowBtn');
+    if (updateManager?.updateAvailable) {
+        updateNowBtn.style.display = 'inline-block';
+    }
+}
+
+async function checkStorageUsage() {
+    try {
+        if ('storage' in navigator && 'estimate' in navigator.storage) {
+            const estimate = await navigator.storage.estimate();
+            const usedMB = Math.round(estimate.usage / 1024 / 1024);
+            const quotaMB = Math.round(estimate.quota / 1024 / 1024);
+            document.getElementById('cacheSize').textContent = `${usedMB}MB / ${quotaMB}MB`;
+        } else {
+            document.getElementById('cacheSize').textContent = 'Not available';
+        }
+    } catch (error) {
+        console.error('Error checking storage:', error);
+        document.getElementById('cacheSize').textContent = 'Error';
+    }
+}
+
+function loadDebugInfo() {
+    // Service Worker status
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+            const swStatus = document.getElementById('swStatus');
+            if (reg) {
+                swStatus.textContent = `Active (${reg.active?.state || 'unknown'})`;
+                swStatus.className = 'text-sm text-green-600';
+            } else {
+                swStatus.textContent = 'Not registered';
+                swStatus.className = 'text-sm text-red-600';
+            }
+        });
+    }
+
+    // Online status
+    const onlineStatus = document.getElementById('onlineStatus');
+    const updateOnlineStatus = () => {
+        onlineStatus.textContent = navigator.onLine ? 'Online' : 'Offline';
+        onlineStatus.className = navigator.onLine ? 'text-sm text-green-600' : 'text-sm text-red-600';
+    };
+    updateOnlineStatus();
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // Browser info
+    document.getElementById('browserInfo').textContent = `${navigator.userAgent.split(') ')[0].split(' (')[0]}`;
+
+    // IndexedDB status
+    if ('indexedDB' in window) {
+        document.getElementById('idbStatus').textContent = 'Available';
+        document.getElementById('idbStatus').className = 'text-sm text-green-600';
+    } else {
+        document.getElementById('idbStatus').textContent = 'Not available';
+        document.getElementById('idbStatus').className = 'text-sm text-red-600';
+    }
+}
+
+function startStatusMonitoring() {
+    // Update storage usage every 30 seconds
+    setInterval(checkStorageUsage, 30000);
+}
+
+// Settings functions
+function showUpdateStatus(message, type = 'info') {
+    const statusDiv = document.getElementById('updateStatus');
+    const messageP = statusDiv.querySelector('p');
+
+    statusDiv.className = `p-4 rounded-lg ${getStatusClass(type)}`;
+    messageP.textContent = message;
+    statusDiv.classList.remove('hidden');
+
+    setTimeout(() => {
+        statusDiv.classList.add('hidden');
+    }, 5000);
+}
+
+function getStatusClass(type) {
+    const classes = {
+        success: 'bg-green-100 border border-green-200 text-green-800',
+        error: 'bg-red-100 border border-red-200 text-red-800',
+        warning: 'bg-yellow-100 border border-yellow-200 text-yellow-800',
+        info: 'bg-blue-100 border border-blue-200 text-blue-800'
+    };
+    return classes[type] || classes.info;
+}
+
+async function clearOfflineData() {
+    if (confirm('Are you sure you want to clear all offline data? This action cannot be undone.')) {
+        try {
+            // Clear IndexedDB
+            if ('indexedDB' in window) {
+                const databases = await indexedDB.databases();
+                await Promise.all(databases.map(db => indexedDB.deleteDatabase(db.name)));
+            }
+
+            // Clear localStorage
+            localStorage.clear();
+
+            showUpdateStatus('Offline data cleared successfully', 'success');
+            setTimeout(() => window.location.reload(), 2000);
+        } catch (error) {
+            showUpdateStatus('Error clearing offline data: ' + error.message, 'error');
+        }
+    }
+}
+
+async function clearAllCache() {
+    if (confirm('Are you sure you want to clear all cache? This may make the app unusable until you reconnect to the internet.')) {
+        try {
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+            }
+
+            showUpdateStatus('Cache cleared successfully', 'success');
+            setTimeout(() => window.location.reload(), 2000);
+        } catch (error) {
+            showUpdateStatus('Error clearing cache: ' + error.message, 'error');
+        }
+    }
+}
+
+async function exportOfflineData() {
+    try {
+        const data = {
+            timestamp: new Date().toISOString(),
+            version: updateManager?.currentVersion || 'unknown',
+            localStorage: {},
+            offlineData: []
+        };
+
+        // Export localStorage
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            data.localStorage[key] = localStorage.getItem(key);
+        }
+
+        // Export IndexedDB data
+        if ('indexedDB' in window) {
+            const db = await new Promise((resolve, reject) => {
+                const request = indexedDB.open('FitnessAppDB', 1);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+
+            // Get data from all object stores
+            const transaction = db.transaction(['offlineData', 'fitnessData'], 'readonly');
+            const offlineStore = transaction.objectStore('offlineData');
+            const fitnessStore = transaction.objectStore('fitnessData');
+
+            data.offlineData = await new Promise((resolve) => {
+                const getAll = offlineStore.getAll();
+                getAll.onsuccess = () => resolve(getAll.result);
+                getAll.onerror = () => resolve([]);
+            });
+
+            data.fitnessData = await new Promise((resolve) => {
+                const getAll = fitnessStore.getAll();
+                getAll.onsuccess = () => resolve(getAll.result);
+                getAll.onerror = () => resolve([]);
+            });
+        }
+
+        // Create and download file
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fitness-app-backup-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showUpdateStatus('Data exported successfully', 'success');
+    } catch (error) {
+        showUpdateStatus('Error exporting data: ' + error.message, 'error');
+    }
+}
+
+function forceUpdate() {
+    if (confirm('Are you sure you want to force reload the app? This will clear all cached data and reload the page.')) {
+        if (updateManager) {
+            updateManager.forceUpdate();
+        } else {
+            window.location.reload(true);
+        }
+    }
+}
+
+function resetApp() {
+    if (confirm('⚠️  WARNING: This will reset all app data including settings, offline data, and cache. This action cannot be undone. Are you sure?')) {
+        clearOfflineData();
+        setTimeout(() => {
+            clearAllCache();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }, 1000);
+    }
+}
+
+// Auto update toggle
+document.getElementById('autoUpdateToggle')?.addEventListener('change', (e) => {
+    localStorage.setItem('autoUpdateEnabled', e.target.checked);
+    showUpdateStatus(e.target.checked ? 'Auto updates enabled' : 'Auto updates disabled', 'info');
+});
+
+// Load auto update setting
+const autoUpdateEnabled = localStorage.getItem('autoUpdateEnabled');
+if (autoUpdateEnabled !== null) {
+    document.getElementById('autoUpdateToggle').checked = autoUpdateEnabled === 'true';
+}
+</script>
+{% endblock %}

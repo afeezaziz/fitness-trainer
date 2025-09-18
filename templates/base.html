@@ -31,12 +31,11 @@
     </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Mobile-friendly Header -->
-    <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6">
-            <div class="text-center">
-                <h1 class="text-2xl md:text-4xl font-bold mb-2">Fitness Trainer</h1>
-                <p class="text-sm md:text-lg opacity-90">Track your food intake, calories, and exercise progress</p>
+    <!-- Compact Header -->
+    <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-md">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-center">
+                <h1 class="text-xl md:text-2xl font-bold">Fitness Trainer</h1>
             </div>
         </div>
     </header>
@@ -53,6 +52,7 @@
                         <li><a href="/food" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Food</a></li>
                         <li><a href="/calories" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Calories</a></li>
                         <li><a href="/exercise" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Exercise</a></li>
+                        <li><a href="/settings" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Settings</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -89,59 +89,34 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-8">
+    <!-- Compact Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-4">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- About Section -->
-                <div class="text-center md:text-left">
-                    <h3 class="text-lg font-semibold mb-4">Fitness Trainer</h3>
-                    <p class="text-gray-300 text-sm">Your comprehensive fitness tracking solution for monitoring food intake, calories, and exercise progress.</p>
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <!-- Brand -->
+                <div class="text-center md:text-left mb-2 md:mb-0">
+                    <h3 class="text-sm font-semibold">Fitness Trainer</h3>
+                    <p class="text-gray-400 text-xs">Built with ❤️ for fitness enthusiasts</p>
                 </div>
 
                 <!-- Quick Links -->
+                <div class="flex flex-wrap justify-center gap-4 mb-2 md:mb-0">
+                    <a href="/" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Home</a>
+                    {% if session.get('user') %}
+                    <a href="/food" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Food</a>
+                    <a href="/calories" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Calories</a>
+                    <a href="/exercise" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Exercise</a>
+                    <a href="/settings" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Settings</a>
+                    {% endif %}
+                    {% if not session.get('user') %}
+                    <a href="/login" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Login</a>
+                    {% endif %}
+                </div>
+
+                <!-- Copyright -->
                 <div class="text-center">
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-300 hover:text-primary transition-colors duration-200 text-sm">Home</a></li>
-                        {% if session.get('user') %}
-                        <li><a href="/food" class="text-gray-300 hover:text-primary transition-colors duration-200 text-sm">Food Tracking</a></li>
-                        <li><a href="/calories" class="text-gray-300 hover:text-primary transition-colors duration-200 text-sm">Calorie Counter</a></li>
-                        <li><a href="/exercise" class="text-gray-300 hover:text-primary transition-colors duration-200 text-sm">Exercise Monitor</a></li>
-                        {% endif %}
-                        {% if not session.get('user') %}
-                        <li><a href="/login" class="text-gray-300 hover:text-primary transition-colors duration-200 text-sm">Login</a></li>
-                        {% endif %}
-                    </ul>
+                    <p class="text-gray-400 text-xs">&copy; 2024 Fitness Trainer</p>
                 </div>
-
-                <!-- Contact Info -->
-                <div class="text-center md:text-right">
-                    <h3 class="text-lg font-semibold mb-4">Connect</h3>
-                    <p class="text-gray-300 text-sm mb-2">Built with ❤️ for fitness enthusiasts</p>
-                    <div class="flex justify-center md:justify-end space-x-4">
-                        <a href="#" class="text-gray-300 hover:text-primary transition-colors duration-200">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-primary transition-colors duration-200">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="text-gray-300 hover:text-primary transition-colors duration-200">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Bar -->
-            <div class="border-t border-gray-700 mt-8 pt-6 text-center">
-                <p class="text-gray-400 text-sm">&copy; 2024 Fitness Trainer. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -156,9 +131,18 @@
     </button>
     {% endif %}
 
-    <!-- Offline JavaScript -->
+    <!-- Offline and Update Management JavaScript -->
     {% if session.get('user') %}
     <script src="/static/js/offline.js"></script>
+    <script src="/static/js/update-manager.js"></script>
+
+    <!-- Manual Update Button (hidden by default, shown in development/debug mode) -->
+    <button id="manualUpdateBtn" class="fixed bottom-4 left-4 bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-lg shadow-lg transition-colors duration-200 z-40 hidden text-sm">
+      <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+      Check Updates
+    </button>
     {% endif %}
 </body>
 </html>

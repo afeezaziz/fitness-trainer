@@ -8,12 +8,79 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__, template_folder='/app/templates', static_folder='/app/static')
+def create_app():
+    app = Flask(__name__, template_folder='/app/templates', static_folder='/app/static')
+
+    # Configuration
+    app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+
+    # Database configuration - prioritize MariaDB for production
+    database_url = os.environ.get('DATABASE_URL')
+    if not database_url:
+        # Default to MariaDB if DATABASE_URL is not set
+        database_url = 'mariadb+pymysql://mariadb:Re1QMoc6bQUHAZqN1YmtCWjuHI3pelPyE6GsIr3JrKWb91dKZwt0Y35rp4ZfljbG@104.248.150.75:33005/default'
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Initialize database
+    db.init_app(app)
+
+    # Fix redirect URI for HTTPS behind reverse proxy
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+
+    # OAuth setup
+    oauth = OAuth(app)
+    google = oauth.register(
+        name='google',
+        client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+        client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'}
+    )
+
+    return app, google
+
+app, google = create_app()
 
 # Add offline page route
 @app.route('/offline')
 def offline():
     return render_template('offline.html')
+
+# Add debug route for database connection
+@app.route('/debug/db')
+def debug_db():
+    try:
+        # Test database connection
+        with db.engine.connect() as conn:
+            result = conn.execute(db.text('SELECT 1 as test'))
+            test_result = result.fetchone()
+
+        # Count users
+        user_count = User.query.count()
+
+        # Get current session info
+        session_info = {
+            'user_id': session.get('user_id'),
+            'email': session.get('email'),
+            'name': session.get('name')
+        }
+
+        return {
+            'database_connection': 'OK',
+            'test_query': test_result[0] if test_result else None,
+            'user_count': user_count,
+            'session': session_info,
+            'database_url': app.config['SQLALCHEMY_DATABASE_URI']
+        }
+    except Exception as e:
+        return {
+            'database_connection': 'ERROR',
+            'error': str(e),
+            'database_url': app.config['SQLALCHEMY_DATABASE_URI']
+        }
 
 def login_required(f):
     def decorated_function(*args, **kwargs):
@@ -29,25 +96,6 @@ def login_required(f):
 @login_required
 def settings():
     return render_template('settings.html')
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///fitness.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Fix redirect URI for HTTPS behind reverse proxy
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
-
-# Initialize database
-db.init_app(app)
-
-oauth = OAuth(app)
-google = oauth.register(
-    name='google',
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
-)
 
 
 def get_current_user():
@@ -153,6 +201,10 @@ def add_calories():
 @login_required
 def exercise():
     user = get_current_user()
+    if user is None:
+        flash('Session expired. Please log in again.', 'error')
+        return redirect(url_for('login'))
+
     today_exercise = ExerciseLog.query.filter(
         ExerciseLog.user_id == user.id,
         db.func.date(ExerciseLog.workout_time) == date.today()
@@ -226,43 +278,57 @@ def login():
 
 @app.route('/authorize')
 def authorize():
-    token = google.authorize_access_token()
-    user_info = token.get('userinfo')
-    if not user_info:
-        # Fallback to using userinfo endpoint
-        resp = google.get('https://www.googleapis.com/oauth2/v2/userinfo')
-        user_info = resp.json()
+    try:
+        token = google.authorize_access_token()
+        user_info = token.get('userinfo')
+        if not user_info:
+            # Fallback to using userinfo endpoint
+            resp = google.get('https://www.googleapis.com/oauth2/v2/userinfo')
+            user_info = resp.json()
 
-    # Find or create user in database
-    user = User.query.filter_by(google_id=user_info['sub']).first()
-    if not user:
-        user = User.query.filter_by(email=user_info['email']).first()
+        if not user_info or 'sub' not in user_info or 'email' not in user_info:
+            flash('Invalid user information received from Google.', 'error')
+            return redirect(url_for('index'))
 
-    if not user:
-        # Create new user
-        user = User(
-            google_id=user_info['sub'],
-            email=user_info['email'],
-            name=user_info.get('name', ''),
-            profile_picture=user_info.get('picture')
-        )
-        db.session.add(user)
-        db.session.commit()
-        flash('Account created successfully!', 'success')
-    else:
-        # Update existing user with new data
-        user.google_id = user_info['sub']
-        user.name = user_info.get('name', '')
-        user.profile_picture = user_info.get('picture')
-        db.session.commit()
+        # Find or create user in database
+        user = User.query.filter_by(google_id=user_info['sub']).first()
+        if not user:
+            user = User.query.filter_by(email=user_info['email']).first()
 
-    session['user_id'] = user.id
-    session['email'] = user.email
-    session['name'] = user.name
-    session['user'] = user_info
+        if not user:
+            # Create new user
+            user = User(
+                google_id=user_info['sub'],
+                email=user_info['email'],
+                name=user_info.get('name', ''),
+                profile_picture=user_info.get('picture')
+            )
+            db.session.add(user)
+            db.session.commit()
+            flash('Account created successfully!', 'success')
+        else:
+            # Update existing user with new data
+            user.google_id = user_info['sub']
+            user.name = user_info.get('name', '')
+            user.profile_picture = user_info.get('picture')
+            db.session.commit()
 
-    flash(f'Welcome back, {user.name}!', 'success')
-    return redirect(url_for('index'))
+        # Verify user was saved properly
+        if not user.id:
+            flash('Error saving user account. Please try again.', 'error')
+            return redirect(url_for('login'))
+
+        session['user_id'] = user.id
+        session['email'] = user.email
+        session['name'] = user.name
+        session['user'] = user_info
+
+        flash(f'Welcome back, {user.name}!', 'success')
+        return redirect(url_for('index'))
+
+    except Exception as e:
+        flash(f'Authentication error: {str(e)}', 'error')
+        return redirect(url_for('login'))
 
 @app.route('/logout')
 def logout():

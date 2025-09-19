@@ -9,6 +9,40 @@
         <p class="text-gray-600">Track your workouts, log sets, reps, and weights to monitor your strength progress.</p>
     </div>
 
+    <!-- Workout Plan Selector -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-8">
+        <div class="flex items-center mb-6">
+            <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-800">Workout Plans</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border-2 border-primary rounded-lg p-4 bg-primary/5">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-lg font-semibold text-gray-800">Workout A</h4>
+                    <button onclick="loadWorkoutPlan('workout_a')" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors">
+                        Load Plan
+                    </button>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Full Body (Horizontal Focus)</p>
+                <p class="text-xs text-gray-500">Squat, Bench Press, Rows, Lateral Raises, Core</p>
+            </div>
+
+            <div class="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-lg font-semibold text-gray-800">Workout B</h4>
+                    <button onclick="loadWorkoutPlan('workout_b')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Load Plan
+                    </button>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">Full Body (Posterior Chain Focus)</p>
+                <p class="text-xs text-gray-500">Back Extension, Shoulder Press, Pulldowns, Cable Rows, Leg Press</p>
+            </div>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <div class="flex items-center mb-6">
@@ -51,6 +85,50 @@
                     <label for="weight" class="block text-sm font-medium text-gray-700 mb-2">Weight (lbs/kg)</label>
                     <input type="number" id="weight" name="weight" min="0" step="0.5" placeholder="e.g., 135" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
                 </div>
+
+              <div class="border-t pt-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Quick Entry Templates</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <button type="button" onclick="fillExerciseTemplate('Barbell Back Squat', 'strength', 4, 8, 185)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Squat (4x8)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Bench Press (Barbell)', 'strength', 4, 8, 135)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Bench Press (4x8)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Dumbbell Rows', 'strength', 4, 10, 45)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            DB Rows (4x10)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Dumbbell Lateral Raises', 'strength', 3, 12, 15)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Lateral Raises (3x12)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Seated Dumbbell Shoulder Press', 'strength', 4, 10, 35)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Shoulder Press (4x10)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Lat Pulldowns', 'strength', 4, 10, 120)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Lat Pulldowns (4x10)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('45-Degree Back Extension', 'strength', 4, 12, 0)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Back Extension (4x12)
+                        </button>
+                        <button type="button" onclick="fillExerciseTemplate('Plank', 'strength', 3, 60, 0)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            Plank (3x60s)
+                        </button>
+                    </div>
+                </div>
+
+                {% if previous_exercises %}
+                <div class="border-t pt-4">
+                    <h4 class="text-sm font-medium text-gray-700 mb-3">Copy Previous Exercise</h4>
+                    <div class="max-h-32 overflow-y-auto space-y-1">
+                        {% for exercise in previous_exercises %}
+                        <button type="button" onclick="copyPreviousExercise('{{ exercise.exercise_name }}', '{{ exercise.exercise_type }}', {{ exercise.sets }}, {{ exercise.reps }}, {{ exercise.weight or 0 }})" class="w-full text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex justify-between items-center">
+                            <span>{{ exercise.exercise_name }} - {{ exercise.sets }}x{{ exercise.reps }}{% if exercise.weight %} @ {{ exercise.weight }}lbs{% endif %}</span>
+                            <span class="text-gray-500 text-xs">{{ exercise.workout_time.strftime('%m/%d') }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
                 <div>
                     <label for="workout-time" class="block text-sm font-medium text-gray-700 mb-2">Workout Time</label>
@@ -182,4 +260,149 @@
         </div>
     </div>
 </div>
+
+<script>
+// Workout plans database
+const workoutPlans = {
+    workout_a: {
+        name: "Workout A - Full Body (Horizontal Focus)",
+        exercises: [
+            { name: "Barbell Back Squat", type: "strength", sets: 4, reps: "6-10", category: "Lower Body (Squat Pattern)" },
+            { name: "Bench Press (Barbell)", type: "strength", sets: 4, reps: "6-10", category: "Upper Body (Horizontal Push)" },
+            { name: "Dumbbell Rows", type: "strength", sets: 4, reps: "8-12 per arm", category: "Upper Body (Horizontal Pull)" },
+            { name: "Dumbbell Lateral Raises", type: "strength", sets: 3, reps: "10-15", category: "Shoulders (Lateral Head)" },
+            { name: "Plank", type: "strength", sets: 3, reps: "Hold for Time", category: "Core (Anterior Stability)" }
+        ]
+    },
+    workout_b: {
+        name: "Workout B - Full Body (Posterior Chain Focus)",
+        exercises: [
+            { name: "45-Degree Back Extension", type: "strength", sets: 4, reps: "10-15", category: "Posterior Chain (Hinge Pattern)" },
+            { name: "Seated Dumbbell Shoulder Press", type: "strength", sets: 4, reps: "8-12", category: "Upper Body (Vertical Push)" },
+            { name: "Lat Pulldowns", type: "strength", sets: 4, reps: "8-12", category: "Upper Body (Vertical Pull)" },
+            { name: "Seated Cable Rows", type: "strength", sets: 3, reps: "10-15", category: "Upper Back / Posture" },
+            { name: "Leg Press", type: "strength", sets: 3, reps: "10-15", category: "Lower Body (Accessory)" }
+        ]
+    }
+};
+
+function loadWorkoutPlan(planName) {
+    const plan = workoutPlans[planName];
+    if (!plan) return;
+
+    // Show workout plan notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md';
+    notification.innerHTML = `
+        <div class="font-semibold mb-1">${plan.name}</div>
+        <div class="text-sm">Ready to log! Click exercises below to fill the form.</div>
+    `;
+    document.body.appendChild(notification);
+
+    // Create workout plan interface
+    createWorkoutPlanInterface(plan);
+
+    // Remove notification after 4 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 4000);
+}
+
+function createWorkoutPlanInterface(plan) {
+    // Remove existing workout plan interface if any
+    const existing = document.getElementById('workout-plan-interface');
+    if (existing) {
+        existing.remove();
+    }
+
+    // Create new interface
+    const interfaceDiv = document.createElement('div');
+    interfaceDiv.id = 'workout-plan-interface';
+    interfaceDiv.className = 'mt-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200';
+
+    interfaceDiv.innerHTML = `
+        <div class="flex items-center justify-between mb-3">
+            <h5 class="font-semibold text-blue-900">${plan.name}</h5>
+            <button onclick="this.parentElement.parentElement.remove()" class="text-blue-600 hover:text-blue-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-2">
+            ${plan.exercises.map(exercise => `
+                <button onclick="fillExerciseTemplateFromPlan('${exercise.name}', '${exercise.type}', ${exercise.sets}, '${exercise.reps}')"
+                        class="w-full text-left p-2 bg-white rounded hover:bg-blue-100 transition-colors flex justify-between items-center">
+                    <span class="font-medium">${exercise.name}</span>
+                    <span class="text-sm text-gray-600">${exercise.sets}x${exercise.reps}</span>
+                </button>
+            `).join('')}
+        </div>
+    `;
+
+    // Insert after the workout plan selector
+    const workoutPlanSelector = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4').parentElement;
+    workoutPlanSelector.appendChild(interfaceDiv);
+}
+
+function fillExerciseTemplate(exerciseName, exerciseType, sets, reps, weight) {
+    document.getElementById('exercise-name').value = exerciseName;
+    document.getElementById('exercise-type').value = exerciseType;
+    document.getElementById('sets').value = sets;
+    document.getElementById('reps').value = reps;
+    document.getElementById('weight').value = weight || '';
+
+    // Focus on the first field so user can easily modify
+    document.getElementById('exercise-name').focus();
+
+    // Scroll to form
+    document.getElementById('exercise-name').scrollIntoView({ behavior: 'smooth' });
+}
+
+function fillExerciseTemplateFromPlan(exerciseName, exerciseType, sets, reps) {
+    fillExerciseTemplate(exerciseName, exerciseType, sets, reps, '');
+
+    // Show a subtle notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+    notification.textContent = `Exercise "${exerciseName}" loaded from workout plan! Adjust weight as needed.`;
+    document.body.appendChild(notification);
+
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+function copyPreviousExercise(exerciseName, exerciseType, sets, reps, weight) {
+    fillExerciseTemplate(exerciseName, exerciseType, sets, reps, weight);
+
+    // Show a subtle notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+    notification.textContent = 'Previous exercise copied! You can modify the values before submitting.';
+    document.body.appendChild(notification);
+
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Set current time as default
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById('workout-time').value = localDateTime;
+});
+</script>
 {% endblock %}

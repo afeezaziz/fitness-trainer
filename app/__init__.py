@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, session, request, f
 from authlib.integrations.flask_client import OAuth
 from flask_sqlalchemy import SQLAlchemy
 from app.models import db, User, FoodLog, CalorieEntry, ExerciseLog, init_db
+from app.exercises import EXERCISE_DATABASE, get_workout_plan, get_all_exercises
 import os
 from datetime import datetime, date
 from dotenv import load_dotenv
@@ -210,6 +211,12 @@ def exercise():
         db.func.date(ExerciseLog.workout_time) == date.today()
     ).order_by(ExerciseLog.workout_time.desc()).all()
 
+    # Get previous exercises for quick copy
+    previous_exercises = ExerciseLog.query.filter(
+        ExerciseLog.user_id == user.id,
+        ExerciseLog.workout_time < datetime.now()
+    ).order_by(ExerciseLog.workout_time.desc()).limit(10).all()
+
     # Calculate weekly stats
     week_start = date.today().replace(day=1)  # Simple: start of month
     week_exercises = ExerciseLog.query.filter(
@@ -224,6 +231,10 @@ def exercise():
 
     return render_template('exercise.html',
                          exercise_logs=today_exercise,
+                         previous_exercises=previous_exercises,
+                         workout_a=EXERCISE_DATABASE.get('workout_a'),
+                         workout_b=EXERCISE_DATABASE.get('workout_b'),
+                         all_exercises=get_all_exercises(),
                          stats={
                              'workouts': total_workouts,
                              'sets': total_sets,

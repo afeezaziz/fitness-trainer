@@ -5,18 +5,20 @@ nixPkgs = ["python3", "gcc", "sqlite"]
 cmds = [
     "python -m venv /opt/venv",
     ". /opt/venv/bin/activate && pip install --no-cache-dir --upgrade pip",
-    ". /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt"
+    ". /opt/venv/bin/activate && pip install --no-cache-dir -r requirements.txt",
+    ". /opt/venv/bin/activate && alembic upgrade head"
 ]
 
 [phases.build]
 cmds = [
     "mkdir -p /app/templates /app/static",
     "cp -r templates/* /app/templates/ 2>/dev/null || true",
-    "cp -r static/* /app/static/ 2>/dev/null || true"
+    "cp -r static/* /app/static/ 2>/dev/null || true",
+    ". /opt/venv/bin/activate && python3 -c \"from app import create_app; from app.models import db, ChatRoom; app, _, _ = create_app(); app.app_context().push(); rooms = ChatRoom.query.count(); print(f'Found {rooms} rooms'); import sys; sys.exit(0 if rooms > 0 else 1)\" || . /opt/venv/bin/activate && python3 -c \"from app import create_app; from app.models import db, ChatRoom; app, _, _ = create_app(); app.app_context().push(); rooms = [{'name': 'general', 'description': 'General fitness discussion and motivation'}, {'name': 'workout-tips', 'description': 'Share workout tips and exercise advice'}, {'name': 'nutrition', 'description': 'Discuss nutrition and meal planning'}, {'name': 'progress', 'description': 'Share your fitness progress and achievements'}]; [db.session.add(ChatRoom(**room)) for room in rooms]; db.session.commit(); print('Created default chat rooms')\""
 ]
 
 [start]
-cmd = "cd /app && gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 app:app"
+cmd = "cd /app && gunicorn --bind 0.0.0.0:$PORT --worker-class eventlet --workers 1 --timeout 120 app:app"
 
 [variables]
 PORT = "8000"

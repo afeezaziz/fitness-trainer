@@ -1,8 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, session, request, flash
 from authlib.integrations.flask_client import OAuth
 from flask_sqlalchemy import SQLAlchemy
-from app.models import db, User, FoodLog, CalorieEntry, ExerciseLog, init_db
+from flask_socketio import SocketIO
+from app.models import db, User, FoodLog, CalorieEntry, ExerciseLog, ChatRoom, ChatMessage, ChatParticipant, init_db
 from app.exercises import EXERCISE_DATABASE, get_workout_plan, get_all_exercises
+from app.chat import init_chat
 import os
 from datetime import datetime, date
 from dotenv import load_dotenv
@@ -27,6 +29,9 @@ def create_app():
     # Initialize database
     db.init_app(app)
 
+    # Initialize SocketIO
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
     # Fix redirect URI for HTTPS behind reverse proxy
     from werkzeug.middleware.proxy_fix import ProxyFix
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
@@ -41,9 +46,12 @@ def create_app():
         client_kwargs={'scope': 'openid email profile'}
     )
 
-    return app, google
+    # Initialize chat handlers
+    init_chat(socketio)
 
-app, google = create_app()
+    return app, google, socketio
+
+app, google, socketio = create_app()
 
 # Add offline page route
 @app.route('/offline')
@@ -97,6 +105,11 @@ def login_required(f):
 @login_required
 def settings():
     return render_template('settings.html')
+
+@app.route('/chat')
+@login_required
+def chat():
+    return render_template('chat.html')
 
 
 def get_current_user():
@@ -356,4 +369,4 @@ def create_tables():
 create_tables()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8081)
+    socketio.run(app, debug=True, port=8081)

@@ -60,6 +60,50 @@ class ExerciseLog(db.Model):
     def __repr__(self):
         return f'<ExerciseLog {self.exercise_name} - {self.sets}x{self.reps}>'
 
+class ChatRoom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)
+
+    # Relationships
+    messages = db.relationship('ChatMessage', backref='room', lazy=True, cascade='all, delete-orphan')
+    participants = db.relationship('ChatParticipant', backref='room', lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<ChatRoom {self.name}>'
+
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('chat_room.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    message_type = db.Column(db.String(20), default='text')  # text, system, join, leave
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_edited = db.Column(db.Boolean, default=False)
+    edited_at = db.Column(db.DateTime, nullable=True)
+
+    # Relationships
+    user = db.relationship('User', backref='chat_messages')
+
+    def __repr__(self):
+        return f'<ChatMessage {self.user.name}: {self.message[:50]}>'
+
+class ChatParticipant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('chat_room.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    joined_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_active = db.Column(db.DateTime, default=datetime.utcnow)
+    is_online = db.Column(db.Boolean, default=False)
+
+    # Relationships
+    user = db.relationship('User', backref='chat_participations')
+
+    def __repr__(self):
+        return f'<ChatParticipant {self.user.name} in {self.room.name}>'
+
 def init_db():
     """Initialize the database with all tables"""
     db.create_all()

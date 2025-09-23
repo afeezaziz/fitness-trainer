@@ -24,6 +24,19 @@
                     colors: {
                         primary: '#10b981',
                         secondary: '#3b82f6',
+                        accent: '#f97316',
+                        premium: '#8b5cf6',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-gentle': 'bounce 2s infinite',
+                        'slide-in': 'slideIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        slideIn: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
                     }
                 }
             }
@@ -31,41 +44,113 @@
     </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Compact Header -->
-    <header class="bg-gradient-to-r from-primary to-secondary text-white shadow-md">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-center">
-                <h1 class="text-xl md:text-2xl font-bold">Fitness Trainer</h1>
+    <!-- Enhanced Fitness Header -->
+    <header class="bg-gradient-to-r from-primary via-accent to-secondary text-white shadow-lg relative overflow-hidden">
+        <!-- Animated Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="fitness" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="white" opacity="0.3"/></pattern></defs><rect width="100" height="100" fill="url(%23fitness)"/></svg>'); background-size: 20px 20px;"></div>
+        </div>
+
+        <div class="container mx-auto px-4 py-4 relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-3 mb-2 md:mb-0">
+                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center animate-pulse-slow">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Fitness Trainer</h1>
+                        <p class="text-xs md:text-sm text-white text-opacity-90">Transform Your Body, Elevate Your Life</p>
+                    </div>
+                </div>
+
+                <!-- Stats/Quick Info -->
+                <div class="flex items-center space-x-4 text-sm">
+                    <div class="hidden md:flex items-center space-x-1 text-white text-opacity-80">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Offline Ready</span>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-1 text-white text-opacity-80">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Track Progress</span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- Mobile-friendly Navigation -->
-    <nav class="bg-gray-800 shadow-md sticky top-0 z-50">
+    <!-- Enhanced Navigation -->
+    <nav class="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg sticky top-0 z-50 border-b border-gray-700">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <!-- Navigation Links -->
+                <!-- Navigation Links with Icons -->
                 <div class="flex-1">
-                    <ul class="flex flex-wrap justify-center md:justify-start space-x-1 md:space-x-6 py-3">
-                        <li><a href="/" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Home</a></li>
+                    <ul class="flex flex-wrap justify-center md:justify-start space-x-1 md:space-x-2 py-3">
+                        <li><a href="/" class="nav-link group flex items-center space-x-1 text-white hover:text-accent transition-all duration-200 font-medium px-3 py-2 text-sm md:text-base rounded-lg hover:bg-white hover:bg-opacity-10">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                            </svg>
+                            <span>Home</span>
+                        </a></li>
                         {% if session.get('user') %}
-                        <li><a href="/food" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Food</a></li>
-                        <li><a href="/calories" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Calories</a></li>
-                        <li><a href="/exercise" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Exercise</a></li>
-                        <li><a href="/settings" class="text-white hover:text-primary transition-colors duration-200 font-medium px-2 py-1 text-sm md:text-base">Settings</a></li>
+                        <li><a href="/food" class="nav-link group flex items-center space-x-1 text-white hover:text-accent transition-all duration-200 font-medium px-3 py-2 text-sm md:text-base rounded-lg hover:bg-white hover:bg-opacity-10">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Food</span>
+                        </a></li>
+                        <li><a href="/calories" class="nav-link group flex items-center space-x-1 text-white hover:text-accent transition-all duration-200 font-medium px-3 py-2 text-sm md:text-base rounded-lg hover:bg-white hover:bg-opacity-10">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Calories</span>
+                        </a></li>
+                        <li><a href="/exercise" class="nav-link group flex items-center space-x-1 text-white hover:text-accent transition-all duration-200 font-medium px-3 py-2 text-sm md:text-base rounded-lg hover:bg-white hover:bg-opacity-10">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Exercise</span>
+                        </a></li>
+                        <li><a href="/settings" class="nav-link group flex items-center space-x-1 text-white hover:text-accent transition-all duration-200 font-medium px-3 py-2 text-sm md:text-base rounded-lg hover:bg-white hover:bg-opacity-10">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Settings</span>
+                        </a></li>
                         {% endif %}
                     </ul>
                 </div>
 
-                <!-- User Actions -->
+                <!-- Enhanced User Actions -->
                 <div class="flex items-center space-x-2 md:space-x-4 py-3">
                     {% if session.get('user') %}
-                    <span class="text-gray-300 text-xs md:text-sm hidden md:inline">
-                        Welcome, {{ session.get('name', session.get('email', 'User'))[:15] }}{% if session.get('name', session.get('email', 'User'))|length > 15 %}...{% endif %}
-                    </span>
-                    <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 md:px-4 md:py-2 rounded-lg transition-colors duration-200 font-medium text-xs md:text-base">Logout</a>
+                    <div class="hidden md:flex items-center space-x-2 bg-white bg-opacity-10 rounded-lg px-3 py-2">
+                        <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-bold">{{ session.get('name', session.get('email', 'User'))[0].upper() }}</span>
+                        </div>
+                        <span class="text-gray-300 text-sm">{{ session.get('name', session.get('email', 'User'))[:15] }}{% if session.get('name', session.get('email', 'User'))|length > 15 %}...{% endif %}</span>
+                    </div>
+                    <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg transition-all duration-200 font-medium text-xs md:text-base flex items-center space-x-1 shadow-md hover:shadow-lg">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Logout</span>
+                    </a>
                     {% else %}
-                    <a href="/login" class="bg-primary hover:bg-green-600 text-white px-3 py-1 md:px-4 md:py-2 rounded-lg transition-colors duration-200 font-medium text-xs md:text-base">Login</a>
+                    <a href="/login" class="bg-gradient-to-r from-accent to-primary hover:from-orange-600 hover:to-green-600 text-white px-4 py-2 md:px-6 md:py-2 rounded-lg transition-all duration-200 font-medium text-xs md:text-base flex items-center space-x-1 shadow-md hover:shadow-lg animate-pulse-slow">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Login</span>
+                    </a>
                     {% endif %}
                 </div>
             </div>
@@ -89,42 +174,137 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Compact Footer -->
-    <footer class="bg-gray-800 text-white py-4 mt-4">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <!-- Brand -->
-                <div class="text-center md:text-left mb-2 md:mb-0">
-                    <h3 class="text-sm font-semibold">Fitness Trainer</h3>
-                    <p class="text-gray-400 text-xs">Built with ❤️ for fitness enthusiasts</p>
+    <!-- Enhanced Fitness Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-8 mt-8 border-t border-gray-700 relative overflow-hidden">
+        <!-- Animated Background -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="fitness-footer" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="12" height="12" fill="white" opacity="0.1"/><rect x="13" y="13" width="12" height="12" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23fitness-footer)"/></svg>'); background-size: 25px 25px;"></div>
+        </div>
+
+        <!-- Floating Fitness Icons -->
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute top-4 left-4 animate-pulse-slow">
+                <svg class="w-6 h-6 text-white text-opacity-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                </svg>
+            </div>
+            <div class="absolute top-8 right-8 animate-bounce-gentle">
+                <svg class="w-5 h-5 text-white text-opacity-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="absolute bottom-4 left-1/4 animate-pulse-slow" style="animation-delay: 1s;">
+                <svg class="w-4 h-4 text-white text-opacity-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Brand Section -->
+                <div class="text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start space-x-2 mb-3">
+                        <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-bold">Fitness Trainer</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Transform Your Body, Elevate Your Life</p>
+                    <div class="flex justify-center md:justify-start space-x-2">
+                        <div class="flex items-center space-x-1 text-xs text-gray-400">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Offline Ready</span>
+                        </div>
+                        <div class="flex items-center space-x-1 text-xs text-gray-400">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>PWA</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Quick Links -->
-                <div class="flex flex-wrap justify-center gap-4 mb-2 md:mb-0">
-                    <a href="/" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Home</a>
-                    {% if session.get('user') %}
-                    <a href="/food" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Food</a>
-                    <a href="/calories" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Calories</a>
-                    <a href="/exercise" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Exercise</a>
-                    <a href="/settings" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Settings</a>
-                    {% endif %}
-                    {% if not session.get('user') %}
-                    <a href="/login" class="text-gray-300 hover:text-primary transition-colors duration-200 text-xs">Login</a>
-                    {% endif %}
+                <div class="text-center">
+                    <h4 class="text-sm font-semibold mb-3 text-accent">Quick Links</h4>
+                    <div class="space-y-2">
+                        <a href="/" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Home</a>
+                        {% if session.get('user') %}
+                        <a href="/food" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Food Tracking</a>
+                        <a href="/calories" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Calorie Counter</a>
+                        <a href="/exercise" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Exercise Log</a>
+                        <a href="/settings" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Settings</a>
+                        {% endif %}
+                        {% if not session.get('user') %}
+                        <a href="/login" class="block text-gray-300 hover:text-accent transition-colors duration-200 text-sm">Login</a>
+                        {% endif %}
+                    </div>
                 </div>
 
-                <!-- Copyright -->
+                <!-- Features -->
                 <div class="text-center">
-                    <p class="text-gray-400 text-xs">&copy; 2024 Fitness Trainer</p>
+                    <h4 class="text-sm font-semibold mb-3 text-accent">Features</h4>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-center space-x-2 text-gray-300 text-sm">
+                            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Nutrition Tracking</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 text-gray-300 text-sm">
+                            <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Calorie Management</span>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 text-gray-300 text-sm">
+                            <svg class="w-4 h-4 text-premium" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Workout Planning</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Motivational Quote -->
+                <div class="text-center">
+                    <h4 class="text-sm font-semibold mb-3 text-accent">Daily Motivation</h4>
+                    <div class="bg-gray-800 rounded-lg p-3 border border-gray-700">
+                        <p class="text-gray-300 text-sm italic mb-2">"The only bad workout is the one that didn't happen."</p>
+                        <p class="text-gray-500 text-xs">- Unknown</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-700 pt-4">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="text-center mb-2 md:mb-0">
+                        <p class="text-gray-400 text-xs">&copy; 2024 Fitness Trainer. Built with ❤️ for fitness enthusiasts</p>
+                    </div>
+                    <div class="flex justify-center space-x-4 text-xs text-gray-400">
+                        <span>Version 1.0</span>
+                        <span>•</span>
+                        <span>Offline First</span>
+                        <span>•</span>
+                        <span>Privacy Focused</span>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Install App Button -->
+    <!-- Enhanced Install App Button -->
     {% if session.get('user') %}
-    <button id="installBtn" class="fixed bottom-4 right-4 bg-primary hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors duration-200 z-40 hidden">
-        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="installBtn" class="fixed bottom-4 right-4 bg-gradient-to-r from-accent to-primary hover:from-orange-600 hover:to-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-all duration-200 z-40 hidden animate-pulse-slow group">
+        <svg class="w-5 h-5 inline mr-2 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
         Install App
@@ -136,9 +316,9 @@
     <script src="/static/js/offline.js"></script>
     <script src="/static/js/update-manager.js"></script>
 
-    <!-- Manual Update Button (hidden by default, shown in development/debug mode) -->
-    <button id="manualUpdateBtn" class="fixed bottom-4 left-4 bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-lg shadow-lg transition-colors duration-200 z-40 hidden text-sm">
-      <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Enhanced Manual Update Button (hidden by default, shown in development/debug mode) -->
+    <button id="manualUpdateBtn" class="fixed bottom-4 left-4 bg-gradient-to-r from-premium to-secondary hover:from-purple-700 hover:to-blue-700 text-white px-3 py-1 rounded-lg shadow-lg transition-all duration-200 z-40 hidden text-sm group">
+      <svg class="w-4 h-4 inline mr-1 group-hover:animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
       </svg>
       Check Updates

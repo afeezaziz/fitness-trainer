@@ -1,0 +1,110 @@
+/* Global design polish */
+:root {
+  --color-primary: #10b981; /* Tailwind emerald-500 */
+  --color-secondary: #3b82f6; /* Tailwind blue-500 */
+  --color-accent: #f97316; /* Tailwind orange-500 */
+  --color-premium: #8b5cf6; /* Tailwind violet-500 */
+}
+
+/* Smooth interactions */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+/* Utility backgrounds to replace inline data-uris */
+.bg-dots-20 {
+  background-image: radial-gradient(rgba(255,255,255,0.3) 1.2px, transparent 1.2px);
+  background-size: 20px 20px;
+}
+.bg-dots-25 {
+  background-image: radial-gradient(rgba(255,255,255,0.1) 1.2px, transparent 1.2px);
+  background-size: 25px 25px;
+}
+
+/* Card polish */
+.card {
+  background: #fff;
+  border: 1px solid rgba(17,24,39,0.06); /* gray-900/6% */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+  transition: box-shadow .2s ease, transform .2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .375rem;
+  font-weight: 600;
+  border-radius: .5rem;
+  padding: .5rem .875rem;
+  transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  color: #fff;
+  background: var(--color-primary);
+  box-shadow: 0 6px 14px rgba(16,185,129,.15);
+}
+.btn-primary:hover { background: #059669; }
+.btn-secondary {
+  color: #fff;
+  background: var(--color-secondary);
+}
+.btn-secondary:hover { background: #2563eb; }
+.btn-ghost {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.12); }
+
+/* Warning & Danger buttons */
+.btn-warning {
+  color: #111827; /* gray-900 */
+  background: #f59e0b; /* amber-500 */
+}
+.btn-warning:hover { background: #d97706; }
+
+.btn-danger {
+  color: #fff;
+  background: #dc2626; /* red-600 */
+}
+.btn-danger:hover { background: #b91c1c; }
+
+/* Inputs */
+.input, .select, .textarea {
+  width: 100%;
+  border: 1px solid rgba(17,24,39,0.12);
+  border-radius: .5rem;
+  padding: .5rem .75rem;
+  background: #fff;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.25);
+}
+
+/* Nav links */
+.nav-link {
+  transition: transform .15s ease, color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.nav-link:hover {
+  transform: translateY(-1px);
+}
+
+/* Section titles */
+.section-title {
+  letter-spacing: -0.01em;
+}

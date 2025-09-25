@@ -16,6 +16,9 @@ class User(db.Model):
     food_logs = db.relationship('FoodLog', backref='user', lazy=True, cascade='all, delete-orphan')
     calorie_entries = db.relationship('CalorieEntry', backref='user', lazy=True, cascade='all, delete-orphan')
     exercise_logs = db.relationship('ExerciseLog', backref='user', lazy=True, cascade='all, delete-orphan')
+    exercise_targets = db.relationship('UserExerciseTarget', backref='user', lazy=True, cascade='all, delete-orphan')
+    energy_burns = db.relationship('EnergyBurnEntry', backref='user', lazy=True, cascade='all, delete-orphan')
+    profile = db.relationship('UserProfile', backref='user', uselist=False, lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -45,6 +48,34 @@ class CalorieEntry(db.Model):
     def __repr__(self):
         return f'<CalorieEntry {self.food_item} - {self.calories} cal>'
 
+class EnergyBurnEntry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    source = db.Column(db.String(20), nullable=False, default='neat')  # neat, cardio, exercise, other
+    activity_name = db.Column(db.String(200), nullable=False)
+    calories_burned = db.Column(db.Integer, nullable=False)
+    duration_minutes = db.Column(db.Float, nullable=True)
+    entry_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    notes = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f'<EnergyBurnEntry {self.activity_name} - {self.calories_burned} cal>'
+
+class UserProfile(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
+    sex = db.Column(db.String(10), nullable=True)  # male, female, other
+    age = db.Column(db.Integer, nullable=True)
+    weight_kg = db.Column(db.Float, nullable=True)
+    height_cm = db.Column(db.Float, nullable=True)
+    activity_level = db.Column(db.String(20), nullable=True)  # sedentary, light, moderate, active, very_active
+    daily_calorie_goal = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<UserProfile user={self.user_id} goal={self.daily_calorie_goal}>'
+
 class ExerciseLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -53,12 +84,46 @@ class ExerciseLog(db.Model):
     sets = db.Column(db.Integer, nullable=False)
     reps = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float, nullable=True)  # in lbs or kg
+    # Scoring fields
+    form_score = db.Column(db.Integer, nullable=True)     # 1-5 form quality
+    effort_score = db.Column(db.Integer, nullable=True)   # 1-10 effort/RPE
     workout_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     notes = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f'<ExerciseLog {self.exercise_name} - {self.sets}x{self.reps}>'
+
+    # Per-set details relationship
+    sets_detail = db.relationship('ExerciseSetLog', backref='exercise_log', lazy=True, cascade='all, delete-orphan')
+
+
+class ExerciseSetLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    exercise_log_id = db.Column(db.Integer, db.ForeignKey('exercise_log.id'), nullable=False)
+    set_number = db.Column(db.Integer, nullable=False)
+    reps = db.Column(db.Integer, nullable=False)
+    weight = db.Column(db.Float, nullable=True)
+    form_score = db.Column(db.Integer, nullable=True)   # 1-5
+    effort_score = db.Column(db.Integer, nullable=True) # 1-10
+    quality_score = db.Column(db.Float, nullable=True)  # computed: form_score * (effort_score/10)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ExerciseSetLog ex={self.exercise_log_id} set={self.set_number} reps={self.reps}>'
+
+
+class UserExerciseTarget(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    exercise_name = db.Column(db.String(200), nullable=False)
+    min_form_score = db.Column(db.Integer, nullable=True)     # 1-5
+    effort_min = db.Column(db.Integer, nullable=True)         # 1-10
+    effort_max = db.Column(db.Integer, nullable=True)         # 1-10
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<UserExerciseTarget {self.exercise_name} user={self.user_id}>'
 
 class ChatRoom(db.Model):
     id = db.Column(db.Integer, primary_key=True)

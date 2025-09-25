@@ -19,7 +19,7 @@
                 <h3 class="text-lg font-semibold text-gray-800">Login Required</h3>
                 <p class="text-gray-600 mt-1">Please log in with your Google account to access all fitness tracking features.</p>
                 <div class="mt-4">
-                    <a href="/login" class="inline-flex items-center px-6 py-3 bg-primary hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
+                    <a href="/login" class="btn btn-primary">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -35,7 +35,7 @@
     {% endif %}
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 card">
             <div class="flex items-center mb-4">
                 <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                     <span class="text-2xl">🍎</span>
@@ -44,9 +44,9 @@
             </div>
             <p class="text-gray-600 mb-6">Log your daily meals and track nutritional intake. Monitor what you eat throughout the day.</p>
             {% if session.get('user') %}
-            <a href="/food" class="inline-flex items-center text-primary hover:text-green-600 font-medium transition-colors duration-200">
+            <a href="/food" class="btn btn-secondary">
                 Start Tracking
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </a>
@@ -55,7 +55,7 @@
             {% endif %}
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 card">
             <div class="flex items-center mb-4">
                 <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                     <span class="text-2xl">🔥</span>
@@ -64,9 +64,9 @@
             </div>
             <p class="text-gray-600 mb-6">Count your daily calories and monitor your caloric intake against your fitness goals.</p>
             {% if session.get('user') %}
-            <a href="/calories" class="inline-flex items-center text-primary hover:text-green-600 font-medium transition-colors duration-200">
+            <a href="/calories" class="btn btn-secondary">
                 Count Calories
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </a>
@@ -75,7 +75,7 @@
             {% endif %}
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 card">
             <div class="flex items-center mb-4">
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     <span class="text-2xl">💪</span>
@@ -84,9 +84,9 @@
             </div>
             <p class="text-gray-600 mb-6">Track your workouts, log sets, reps, and weights to monitor your strength progress.</p>
             {% if session.get('user') %}
-            <a href="/exercise" class="inline-flex items-center text-primary hover:text-green-600 font-medium transition-colors duration-200">
+            <a href="/exercise" class="btn btn-secondary">
                 Log Exercise
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </a>

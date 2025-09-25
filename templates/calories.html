@@ -10,45 +10,71 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl p-6 shadow-lg">
+        <div class="bg-green-50 p-6 rounded-xl border border-green-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-green-100 text-sm font-medium">Calories Consumed</p>
-                    <p class="text-3xl font-bold">{{ total_calories }}</p>
+                    <p class="text-green-800 text-sm font-medium">Calories Consumed</p>
+                    <p class="text-3xl font-bold text-slate-800">{{ total_calories }}</p>
                 </div>
-                <svg class="w-12 h-12 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-12 h-12 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-orange-400 to-orange-600 text-white rounded-xl p-6 shadow-lg">
+        <div class="bg-orange-50 p-6 rounded-xl border border-orange-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-orange-100 text-sm font-medium">Daily Goal</p>
-                    <p class="text-3xl font-bold">{{ daily_goal }}</p>
+                    <p class="text-orange-800 text-sm font-medium">Daily Goal</p>
+                    <p class="text-3xl font-bold text-slate-800">{{ daily_goal }}</p>
                 </div>
-                <svg class="w-12 h-12 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-12 h-12 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl p-6 shadow-lg">
+        <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-blue-100 text-sm font-medium">Remaining</p>
-                    <p class="text-3xl font-bold">{{ daily_goal - total_calories }}</p>
+                    <p class="text-blue-800 text-sm font-medium">Remaining (Net)</p>
+                    <p class="text-3xl font-bold text-slate-800">{{ daily_goal - net_calories }}</p>
                 </div>
-                <svg class="w-12 h-12 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                 </svg>
             </div>
         </div>
     </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="bg-rose-50 p-6 rounded-xl border border-rose-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-rose-800 text-sm font-medium">Calories Burned</p>
+                    <p class="text-3xl font-bold text-slate-800">{{ burned_calories }}</p>
+                </div>
+                <svg class="w-12 h-12 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="bg-purple-50 p-6 rounded-xl border border-purple-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-800 text-sm font-medium">Net Calories</p>
+                    <p class="text-3xl font-bold text-slate-800">{{ net_calories }}</p>
+                </div>
+                <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
             <div class="flex items-center mb-6">
                 <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -77,7 +103,7 @@
                     <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-primary hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                <button type="submit" class="btn btn-primary w-full">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -86,7 +112,7 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
             <div class="flex items-center mb-6">
                 <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -125,6 +151,56 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     <p class="text-gray-500 text-base">No calorie entries logged yet today. Start by adding your first food item above!</p>
+                </div>
+            {% endif %}
+        </div>
+        <!-- Burn log card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
+            <div class="flex items-center mb-6">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <div class="flex items-center justify-between w-full">
+                    <h3 class="text-xl font-semibold text-gray-800">Today's Burn Log</h3>
+                    <a href="/neat" class="text-sm text-primary hover:underline">Log Burn</a>
+                </div>
+            </div>
+
+            {% if energy_burns %}
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Calories</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for b in energy_burns %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ b.entry_time.strftime('%I:%M %p') }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ b.activity_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-white">{{ b.source }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ b.duration_minutes or '-' }} {{ 'min' if b.duration_minutes else '' }}</td>
+                                <td class="px-4 py-3 text-sm font-bold text-primary">{{ b.calories_burned }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ b.notes or '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <p class="text-gray-500 text-base">No activity burns logged yet today. Use the NEAT page to add one.</p>
                 </div>
             {% endif %}
         </div>

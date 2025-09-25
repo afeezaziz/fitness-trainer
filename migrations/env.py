@@ -8,8 +8,8 @@ import sys
 # Add the project root to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from app import create_app, db
-from app.models import *
+from app.models import db  # import metadata without importing app package
+from app.models import *   # ensure all models are imported for autogenerate
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

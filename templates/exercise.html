@@ -10,7 +10,7 @@
     </div>
 
     <!-- Workout Plan Selector -->
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-8">
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card mb-8">
         <div class="flex items-center mb-6">
             <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -22,7 +22,7 @@
             <div class="border-2 border-primary rounded-lg p-4 bg-primary/5">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="text-lg font-semibold text-gray-800">Workout A</h4>
-                    <button onclick="loadWorkoutPlan('workout_a')" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors">
+                    <button data-plan="workout_a" class="load-plan-btn btn btn-secondary">
                         Load Plan
                     </button>
                 </div>
@@ -33,7 +33,7 @@
             <div class="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
                 <div class="flex items-center justify-between mb-3">
                     <h4 class="text-lg font-semibold text-gray-800">Workout B</h4>
-                    <button onclick="loadWorkoutPlan('workout_b')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    <button data-plan="workout_b" class="load-plan-btn btn btn-secondary">
                         Load Plan
                     </button>
                 </div>
@@ -43,8 +43,83 @@
         </div>
     </div>
 
+    <!-- Trends & Targets -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        <!-- Trends -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card lg:col-span-2">
+            <div class="flex items-center mb-6">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-800">Trends (This Month)</h3>
+            </div>
+            <div class="space-y-6">
+                <canvas id="qualityChart" height="120"></canvas>
+                <canvas id="volumeChart" height="120"></canvas>
+            </div>
+        </div>
+
+        <!-- Targets -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
+            <div class="flex items-center mb-6">
+                <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-800">Personalized Targets</h3>
+            </div>
+            <form action="/add_target" method="POST" class="space-y-4 mb-6">
+                <div>
+                    <label for="target-exercise-name" class="block text-sm font-medium text-gray-700 mb-2">Exercise</label>
+                    <input type="text" id="target-exercise-name" name="target-exercise-name" list="exercise-list" placeholder="e.g., Bench Press (Barbell)" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <datalist id="exercise-list">
+                        {% for ex in all_exercises %}
+                        <option value="{{ ex.name }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label for="target-min-form" class="block text-xs font-medium text-gray-700 mb-1">Min Form (1-5)</label>
+                        <input type="number" id="target-min-form" name="target-min-form" min="1" max="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="target-effort-min" class="block text-xs font-medium text-gray-700 mb-1">Effort Min</label>
+                        <input type="number" id="target-effort-min" name="target-effort-min" min="1" max="10" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="target-effort-max" class="block text-xs font-medium text-gray-700 mb-1">Effort Max</label>
+                        <input type="number" id="target-effort-max" name="target-effort-max" min="1" max="10" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Add Target</button>
+            </form>
+
+            {% if stats.targets and stats.targets|length > 0 %}
+            <div>
+                <h4 class="text-sm font-semibold text-gray-700 mb-3">Current Targets</h4>
+                <div class="space-y-2">
+                    {% for t in stats.targets %}
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between">
+                        <div>
+                            <div class="text-sm font-medium text-gray-800">{{ t.exercise_name }}</div>
+                            <div class="text-xs text-gray-500">Form ≥ {{ t.min_form_score or '—' }}, Effort {{ t.effort_min or '—' }}–{{ t.effort_max or '—' }}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold text-primary">{{ t.adherence }}%</div>
+                            <div class="text-xs text-gray-500">Adherence</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-sm text-gray-500">No targets yet. Add one above to track adherence.</p>
+            {% endif %}
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
             <div class="flex items-center mb-6">
                 <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -86,31 +161,58 @@
                     <input type="number" id="weight" name="weight" min="0" step="0.5" placeholder="e.g., 135" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
                 </div>
 
+                <!-- Optional energy fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="duration-minutes" class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes) <span class="text-gray-400 text-xs">optional</span></label>
+                        <input type="number" id="duration-minutes" name="duration-minutes" min="0" step="1" placeholder="e.g., 30" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                    </div>
+                    <div>
+                        <label for="calories-burned" class="block text-sm font-medium text-gray-700 mb-2">Calories Burned <span class="text-gray-400 text-xs">optional</span></label>
+                        <input type="number" id="calories-burned" name="calories-burned" min="0" step="1" placeholder="e.g., 250" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors">
+                        <p class="mt-1 text-xs text-gray-500">Tip: For cardio, log approximate calories if you know them. Otherwise leave blank.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="form-score" class="block text-sm font-medium text-gray-700 mb-2">Form Quality (1-5)</label>
+                        <input type="range" id="form-score" name="form-score" min="1" max="5" step="1" class="w-full">
+                        <div class="mt-1 text-xs text-gray-500">Form: <span id="form-score-value">3</span>/5 — 1 = Needs work, 5 = Excellent</div>
+                    </div>
+
+                    <div>
+                        <label for="effort-score" class="block text-sm font-medium text-gray-700 mb-2">Effort (RPE 1-10)</label>
+                        <input type="range" id="effort-score" name="effort-score" min="1" max="10" step="1" class="w-full">
+                        <div class="mt-1 text-xs text-gray-500">Effort: <span id="effort-score-value">7</span>/10 — 10 = All-out</div>
+                    </div>
+                </div>
+
               <div class="border-t pt-4">
                     <h4 class="text-sm font-medium text-gray-700 mb-3">Quick Entry Templates</h4>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        <button type="button" onclick="fillExerciseTemplate('Barbell Back Squat', 'strength', 4, 8, 185)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Barbell Back Squat" data-type="strength" data-sets="4" data-reps="8" data-weight="185">
                             Squat (4x8)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Bench Press (Barbell)', 'strength', 4, 8, 135)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Bench Press (Barbell)" data-type="strength" data-sets="4" data-reps="8" data-weight="135">
                             Bench Press (4x8)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Dumbbell Rows', 'strength', 4, 10, 45)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Dumbbell Rows" data-type="strength" data-sets="4" data-reps="10" data-weight="45">
                             DB Rows (4x10)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Dumbbell Lateral Raises', 'strength', 3, 12, 15)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Dumbbell Lateral Raises" data-type="strength" data-sets="3" data-reps="12" data-weight="15">
                             Lateral Raises (3x12)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Seated Dumbbell Shoulder Press', 'strength', 4, 10, 35)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Seated Dumbbell Shoulder Press" data-type="strength" data-sets="4" data-reps="10" data-weight="35">
                             Shoulder Press (4x10)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Lat Pulldowns', 'strength', 4, 10, 120)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Lat Pulldowns" data-type="strength" data-sets="4" data-reps="10" data-weight="120">
                             Lat Pulldowns (4x10)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('45-Degree Back Extension', 'strength', 4, 12, 0)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="45-Degree Back Extension" data-type="strength" data-sets="4" data-reps="12" data-weight="0">
                             Back Extension (4x12)
                         </button>
-                        <button type="button" onclick="fillExerciseTemplate('Plank', 'strength', 3, 60, 0)" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                        <button type="button" class="quick-template-btn text-xs px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" data-name="Plank" data-type="strength" data-sets="3" data-reps="60" data-weight="0">
                             Plank (3x60s)
                         </button>
                     </div>
@@ -121,7 +223,12 @@
                     <h4 class="text-sm font-medium text-gray-700 mb-3">Copy Previous Exercise</h4>
                     <div class="max-h-32 overflow-y-auto space-y-1">
                         {% for exercise in previous_exercises %}
-                        <button type="button" onclick="copyPreviousExercise('{{ exercise.exercise_name }}', '{{ exercise.exercise_type }}', {{ exercise.sets }}, {{ exercise.reps }}, {{ exercise.weight or 0 }})" class="w-full text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex justify-between items-center">
+                        <button type="button" class="copy-previous-btn w-full text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors flex justify-between items-center"
+                                data-name="{{ exercise.exercise_name|e }}"
+                                data-type="{{ exercise.exercise_type|e }}"
+                                data-sets="{{ exercise.sets }}"
+                                data-reps="{{ exercise.reps }}"
+                                data-weight="{{ exercise.weight or 0 }}">
                             <span>{{ exercise.exercise_name }} - {{ exercise.sets }}x{{ exercise.reps }}{% if exercise.weight %} @ {{ exercise.weight }}lbs{% endif %}</span>
                             <span class="text-gray-500 text-xs">{{ exercise.workout_time.strftime('%m/%d') }}</span>
                         </button>
@@ -140,7 +247,7 @@
                     <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-none"></textarea>
                 </div>
 
-                <button type="submit" class="w-full bg-primary hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                <button type="submit" class="btn btn-primary w-full flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -149,7 +256,7 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
             <div class="flex items-center mb-6">
                 <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -168,6 +275,9 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sets</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reps</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Weight</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Form</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effort</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                             </tr>
                         </thead>
@@ -184,6 +294,10 @@
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ log.sets }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ log.reps }}</td>
                                 <td class="px-4 py-3 text-sm font-bold text-primary">{{ log.weight or '-' }} {{ 'lbs' if log.weight else '' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ log.form_score or '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ log.effort_score or '-' }}</td>
+                                {% set di = derived.get(log.id) %}
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ di.avg_quality if di and di.avg_quality is not none else '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-500">{{ log.notes or '-' }}</td>
                             </tr>
                             {% endfor %}
@@ -201,7 +315,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
         <div class="flex items-center mb-6">
             <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -210,7 +324,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-blue-600 text-sm font-medium">Workouts</p>
@@ -222,7 +336,7 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+            <div class="bg-green-50 p-6 rounded-xl border border-green-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-green-600 text-sm font-medium">Total Sets</p>
@@ -234,7 +348,7 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+            <div class="bg-purple-50 p-6 rounded-xl border border-purple-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-purple-600 text-sm font-medium">Total Reps</p>
@@ -246,7 +360,7 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl border border-yellow-200">
+            <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-yellow-600 text-sm font-medium">Max Weight</p>
@@ -257,152 +371,63 @@
                     </svg>
                 </div>
             </div>
+
+            <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-indigo-600 text-sm font-medium">Avg Form</p>
+                        <p class="text-2xl font-bold text-indigo-800">{{ stats.avg_form }}/5</p>
+                    </div>
+                    <svg class="w-10 h-10 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-rose-50 p-6 rounded-xl border border-rose-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-rose-600 text-sm font-medium">Avg Effort</p>
+                        <p class="text-2xl font-bold text-rose-800">{{ stats.avg_effort }}/10</p>
+                    </div>
+                    <svg class="w-10 h-10 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m-4-4h8"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-slate-600 text-sm font-medium">Training Volume</p>
+                        <p class="text-2xl font-bold text-slate-800">{{ stats.volume }} {{ 'lbs' }}</p>
+                    </div>
+                    <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h12M4 18h8"></path>
+                    </svg>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-// Workout plans database
-const workoutPlans = {
-    workout_a: {
-        name: "Workout A - Full Body (Horizontal Focus)",
-        exercises: [
-            { name: "Barbell Back Squat", type: "strength", sets: 4, reps: "6-10", category: "Lower Body (Squat Pattern)" },
-            { name: "Bench Press (Barbell)", type: "strength", sets: 4, reps: "6-10", category: "Upper Body (Horizontal Push)" },
-            { name: "Dumbbell Rows", type: "strength", sets: 4, reps: "8-12 per arm", category: "Upper Body (Horizontal Pull)" },
-            { name: "Dumbbell Lateral Raises", type: "strength", sets: 3, reps: "10-15", category: "Shoulders (Lateral Head)" },
-            { name: "Plank", type: "strength", sets: 3, reps: "Hold for Time", category: "Core (Anterior Stability)" }
-        ]
-    },
-    workout_b: {
-        name: "Workout B - Full Body (Posterior Chain Focus)",
-        exercises: [
-            { name: "45-Degree Back Extension", type: "strength", sets: 4, reps: "10-15", category: "Posterior Chain (Hinge Pattern)" },
-            { name: "Seated Dumbbell Shoulder Press", type: "strength", sets: 4, reps: "8-12", category: "Upper Body (Vertical Push)" },
-            { name: "Lat Pulldowns", type: "strength", sets: 4, reps: "8-12", category: "Upper Body (Vertical Pull)" },
-            { name: "Seated Cable Rows", type: "strength", sets: 3, reps: "10-15", category: "Upper Back / Posture" },
-            { name: "Leg Press", type: "strength", sets: 3, reps: "10-15", category: "Lower Body (Accessory)" }
-        ]
-    }
-};
-
-function loadWorkoutPlan(planName) {
-    const plan = workoutPlans[planName];
-    if (!plan) return;
-
-    // Show workout plan notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md';
-    notification.innerHTML = `
-        <div class="font-semibold mb-1">${plan.name}</div>
-        <div class="text-sm">Ready to log! Click exercises below to fill the form.</div>
-    `;
-    document.body.appendChild(notification);
-
-    // Create workout plan interface
-    createWorkoutPlanInterface(plan);
-
-    // Remove notification after 4 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 4000);
-}
-
-function createWorkoutPlanInterface(plan) {
-    // Remove existing workout plan interface if any
-    const existing = document.getElementById('workout-plan-interface');
-    if (existing) {
-        existing.remove();
-    }
-
-    // Create new interface
-    const interfaceDiv = document.createElement('div');
-    interfaceDiv.id = 'workout-plan-interface';
-    interfaceDiv.className = 'mt-4 p-4 bg-blue-50 rounded-lg border-2 border-blue-200';
-
-    interfaceDiv.innerHTML = `
-        <div class="flex items-center justify-between mb-3">
-            <h5 class="font-semibold text-blue-900">${plan.name}</h5>
-            <button onclick="this.parentElement.parentElement.remove()" class="text-blue-600 hover:text-blue-800">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="space-y-2">
-            ${plan.exercises.map(exercise => `
-                <button onclick="fillExerciseTemplateFromPlan('${exercise.name}', '${exercise.type}', ${exercise.sets}, '${exercise.reps}')"
-                        class="w-full text-left p-2 bg-white rounded hover:bg-blue-100 transition-colors flex justify-between items-center">
-                    <span class="font-medium">${exercise.name}</span>
-                    <span class="text-sm text-gray-600">${exercise.sets}x${exercise.reps}</span>
-                </button>
-            `).join('')}
-        </div>
-    `;
-
-    // Insert after the workout plan selector
-    const workoutPlanSelector = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4').parentElement;
-    workoutPlanSelector.appendChild(interfaceDiv);
-}
-
-function fillExerciseTemplate(exerciseName, exerciseType, sets, reps, weight) {
-    document.getElementById('exercise-name').value = exerciseName;
-    document.getElementById('exercise-type').value = exerciseType;
-    document.getElementById('sets').value = sets;
-    document.getElementById('reps').value = reps;
-    document.getElementById('weight').value = weight || '';
-
-    // Focus on the first field so user can easily modify
-    document.getElementById('exercise-name').focus();
-
-    // Scroll to form
-    document.getElementById('exercise-name').scrollIntoView({ behavior: 'smooth' });
-}
-
-function fillExerciseTemplateFromPlan(exerciseName, exerciseType, sets, reps) {
-    fillExerciseTemplate(exerciseName, exerciseType, sets, reps, '');
-
-    // Show a subtle notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
-    notification.textContent = `Exercise "${exerciseName}" loaded from workout plan! Adjust weight as needed.`;
-    document.body.appendChild(notification);
-
-    // Remove notification after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
-function copyPreviousExercise(exerciseName, exerciseType, sets, reps, weight) {
-    fillExerciseTemplate(exerciseName, exerciseType, sets, reps, weight);
-
-    // Show a subtle notification
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
-    notification.textContent = 'Previous exercise copied! You can modify the values before submitting.';
-    document.body.appendChild(notification);
-
-    // Remove notification after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
-// Set current time as default
-document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-    document.getElementById('workout-time').value = localDateTime;
-});
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 card">
+        <div class="flex items-center mb-6">
+            <svg class="w-6 h-6 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-800">Progress Charts</h3>
+            <!-- Charts are displayed in the Trends section above -->
+ 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ 
+<script id="trend-data" type="application/json">
+{{ {
+  'labels': stats.trend_labels,
+  'form': stats.trend_form,
+  'effort': stats.trend_effort,
+  'quality': stats.trend_quality,
+  'volume': stats.trend_volume
+} | tojson }}
 </script>
+<script src="/static/js/exercise.js"></script>
 {% endblock %}

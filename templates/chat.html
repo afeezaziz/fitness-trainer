@@ -12,7 +12,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Sidebar - Room List -->
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 card">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <svg class="w-5 h-5 mr-2 text-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Online Users -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 mt-6 card">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                     Online Users
@@ -38,16 +38,16 @@
 
         <!-- Main Chat Area -->
         <div class="lg:col-span-3">
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card">
                 <!-- Room Header -->
-                <div id="room-header" class="bg-gradient-to-r from-primary to-secondary text-white p-6">
+                <div id="room-header" class="bg-gray-50 border-b text-gray-800 p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 id="current-room-name" class="text-xl font-semibold">Select a room to start chatting</h3>
-                            <p id="current-room-description" class="text-white text-opacity-90 text-sm">Choose a chat room from the sidebar</p>
+                            <h3 id="current-room-name" class="text-xl font-semibold text-gray-800">Select a room to start chatting</h3>
+                            <p id="current-room-description" class="text-gray-600 text-sm">Choose a chat room from the sidebar</p>
                         </div>
                         <div id="room-participants" class="hidden">
-                            <span class="text-sm text-white text-opacity-80">
+                            <span class="text-sm text-gray-600">
                                 <span id="participant-count">0</span> participants
                             </span>
                         </div>
@@ -94,7 +94,7 @@
                         >
                         <button
                             type="submit"
-                            class="bg-primary hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled
                         >
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -120,361 +120,11 @@
 
 {% block extra_scripts %}
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script>
-class FitnessChat {
-    constructor() {
-        this.socket = null;
-        this.currentRoom = null;
-        this.currentUser = null;
-        this.typingTimeout = null;
-        this.typingUsers = new Set();
-
-        this.initializeChat();
-        this.setupEventListeners();
-    }
-
-    initializeChat() {
-        // Get current user info
-        this.currentUser = {
-            id: {{ session.get('user_id', 'null') }},
-            name: "{{ session.get('name', session.get('email', 'User'))|replace('"', '\\"') }}"
-        };
-
-        // Connect to Socket.IO
-        this.socket = io({
-            auth: {
-                user_id: this.currentUser.id
-            }
-        });
-
-        this.setupSocketHandlers();
-    }
-
-    setupSocketHandlers() {
-        this.socket.on('connect', () => {
-            this.updateConnectionStatus('Connected', 'green');
-            this.loadRooms();
-        });
-
-        this.socket.on('disconnect', () => {
-            this.updateConnectionStatus('Disconnected', 'red');
-        });
-
-        this.socket.on('status', (data) => {
-            console.log('Status:', data.message);
-        });
-
-        this.socket.on('rooms_list', (data) => {
-            this.displayRooms(data);
-        });
-
-        this.socket.on('room_joined', (data) => {
-            this.joinRoom(data);
-        });
-
-        this.socket.on('new_message', (data) => {
-            this.displayMessage(data);
-        });
-
-        this.socket.on('user_joined', (data) => {
-            this.displaySystemMessage(data.message);
-            this.updateParticipants();
-        });
-
-        this.socket.on('user_left', (data) => {
-            this.displaySystemMessage(data.message);
-            this.updateParticipants();
-        });
-
-        this.socket.on('user_typing', (data) => {
-            this.handleTypingIndicator(data);
-        });
-
-        this.socket.on('error', (data) => {
-            this.showError(data.message);
-        });
-    }
-
-    setupEventListeners() {
-        // Message form
-        const messageForm = document.getElementById('message-form');
-        const messageInput = document.getElementById('message-input');
-
-        messageForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.sendMessage();
-        });
-
-        // Typing indicators
-        messageInput.addEventListener('input', () => {
-            this.startTyping();
-        });
-
-        messageInput.addEventListener('blur', () => {
-            this.stopTyping();
-        });
-    }
-
-    loadRooms() {
-        this.socket.emit('get_rooms');
-    }
-
-    displayRooms(rooms) {
-        const roomsList = document.getElementById('rooms-list');
-        roomsList.innerHTML = '';
-
-        rooms.forEach(room => {
-            const roomElement = document.createElement('div');
-            roomElement.className = 'p-3 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-100 border border-transparent hover:border-gray-200';
-            roomElement.innerHTML = `
-                <div class="font-medium text-gray-800">${room.name}</div>
-                <div class="text-sm text-gray-600">${room.description}</div>
-            `;
-            roomElement.addEventListener('click', () => this.selectRoom(room.name));
-            roomsList.appendChild(roomElement);
-        });
-    }
-
-    selectRoom(roomName) {
-        if (this.currentRoom === roomName) return;
-
-        // Leave current room if any
-        if (this.currentRoom) {
-            this.socket.emit('leave_room', { room: this.currentRoom });
-        }
-
-        // Join new room
-        this.currentRoom = roomName;
-        this.socket.emit('join_room', { room: roomName });
-
-        // Update UI
-        this.updateRoomHeader(roomName);
-        this.clearMessages();
-        this.enableMessageInput();
-    }
-
-    joinRoom(data) {
-        document.getElementById('welcome-message').classList.add('hidden');
-        document.getElementById('messages-list').classList.remove('hidden');
-
-        // Display existing messages
-        data.messages.forEach(message => {
-            this.displayMessage(message, false);
-        });
-
-        // Update participants
-        this.updateParticipants(data.participants);
-
-        // Update room header
-        document.getElementById('current-room-name').textContent = data.room;
-        document.getElementById('current-room-description').textContent = data.room_description;
-        document.getElementById('room-participants').classList.remove('hidden');
-    }
-
-    sendMessage() {
-        const input = document.getElementById('message-input');
-        const message = input.value.trim();
-
-        if (!message || !this.currentRoom) return;
-
-        this.socket.emit('send_message', {
-            room: this.currentRoom,
-            message: message
-        });
-
-        input.value = '';
-        this.stopTyping();
-    }
-
-    displayMessage(message, scrollToBottom = true) {
-        const messagesList = document.getElementById('messages-list');
-        const messageElement = document.createElement('div');
-
-        const isCurrentUser = message.user_id === this.currentUser.id;
-        const isSystem = message.message_type !== 'text';
-
-        if (isSystem) {
-            messageElement.className = 'text-center';
-            messageElement.innerHTML = `
-                <span class="inline-block bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs">
-                    ${message.message}
-                </span>
-            `;
-        } else {
-            messageElement.className = `flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`;
-            messageElement.innerHTML = `
-                <div class="max-w-xs lg:max-w-md">
-                    <div class="flex items-center space-x-2 mb-1 ${isCurrentUser ? 'justify-end' : 'justify-start'}">
-                        <span class="text-xs text-gray-500">${message.user_name}</span>
-                        <span class="text-xs text-gray-400">${this.formatTime(message.timestamp)}</span>
-                    </div>
-                    <div class="px-4 py-2 rounded-lg ${isCurrentUser ? 'bg-primary text-white' : 'bg-gray-200 text-gray-800'}">
-                        <p class="text-sm">${this.escapeHtml(message.message)}</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        messagesList.appendChild(messageElement);
-
-        if (scrollToBottom) {
-            this.scrollToBottom();
-        }
-    }
-
-    displaySystemMessage(message) {
-        this.displayMessage({
-            message: message,
-            message_type: 'system',
-            timestamp: new Date().toISOString()
-        });
-    }
-
-    startTyping() {
-        if (this.typingTimeout) return;
-
-        this.socket.emit('typing_start', { room: this.currentRoom });
-
-        this.typingTimeout = setTimeout(() => {
-            this.stopTyping();
-        }, 1000);
-    }
-
-    stopTyping() {
-        if (this.typingTimeout) {
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = null;
-        }
-
-        this.socket.emit('typing_stop', { room: this.currentRoom });
-    }
-
-    handleTypingIndicator(data) {
-        const indicator = document.getElementById('typing-indicator');
-        const typingText = document.getElementById('typing-text');
-
-        if (data.is_typing && data.user_id !== this.currentUser.id) {
-            this.typingUsers.add(data.user_id);
-            typingText.textContent = `${data.user_name} is typing...`;
-            indicator.classList.remove('hidden');
-        } else {
-            this.typingUsers.delete(data.user_id);
-
-            if (this.typingUsers.size === 0) {
-                indicator.classList.add('hidden');
-            } else {
-                const names = Array.from(this.typingUsers).map(id =>
-                    document.querySelector(`[data-user-id="${id}"]`)?.textContent || 'Someone'
-                );
-                typingText.textContent = names.length === 1 ?
-                    `${names[0]} is typing...` :
-                    `${names.length} people are typing...`;
-            }
-        }
-    }
-
-    updateParticipants(participants = []) {
-        const participantsElement = document.getElementById('online-users');
-        const participantCount = document.getElementById('participant-count');
-
-        // Update participant count
-        participantCount.textContent = participants.length;
-
-        // Update online users list
-        participantsElement.innerHTML = '';
-        participants.forEach(participant => {
-            const userElement = document.createElement('div');
-            userElement.className = 'flex items-center space-x-2 p-2 rounded-lg bg-gray-50';
-            userElement.innerHTML = `
-                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span class="text-sm text-gray-700">${participant.user_name}</span>
-            `;
-            participantsElement.appendChild(userElement);
-        });
-    }
-
-    updateRoomHeader(roomName) {
-        const room = document.querySelector(`[onclick="chat.selectRoom('${roomName}')"]`);
-        if (room) {
-            // Remove active state from all rooms
-            document.querySelectorAll('#rooms-list > div').forEach(r => {
-                r.classList.remove('bg-primary', 'text-white');
-                r.classList.add('hover:bg-gray-100');
-            });
-
-            // Add active state to current room
-            room.classList.add('bg-primary', 'text-white');
-            room.classList.remove('hover:bg-gray-100');
-        }
-    }
-
-    clearMessages() {
-        const messagesList = document.getElementById('messages-list');
-        messagesList.innerHTML = '';
-    }
-
-    enableMessageInput() {
-        const input = document.getElementById('message-input');
-        const button = document.querySelector('#message-form button');
-        const inputArea = document.getElementById('message-input-area');
-
-        input.disabled = false;
-        button.disabled = false;
-        inputArea.classList.remove('hidden');
-
-        input.focus();
-    }
-
-    updateConnectionStatus(status, color) {
-        const indicator = document.getElementById('status-indicator');
-        const text = document.getElementById('status-text');
-
-        indicator.className = `w-2 h-2 bg-${color}-500 rounded-full`;
-        text.textContent = status;
-
-        // Hide status after 3 seconds if connected
-        if (status === 'Connected') {
-            setTimeout(() => {
-                document.getElementById('connection-status').classList.add('hidden');
-            }, 3000);
-        } else {
-            document.getElementById('connection-status').classList.remove('hidden');
-        }
-    }
-
-    scrollToBottom() {
-        const container = document.getElementById('messages-container');
-        container.scrollTop = container.scrollHeight;
-    }
-
-    formatTime(timestamp) {
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    showError(message) {
-        // Create a toast notification
-        const toast = document.createElement('div');
-        toast.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
-    }
-}
-
-// Initialize chat when page loads
-let chat;
-document.addEventListener('DOMContentLoaded', () => {
-    chat = new FitnessChat();
-});
+<script id="chat-config" type="application/json">
+{{ {
+  'user_id': session.get('user_id'),
+  'user_name': session.get('name', session.get('email', 'User'))
+} | tojson }}
 </script>
+<script src="/static/js/chat.js"></script>
 {% endblock %}
